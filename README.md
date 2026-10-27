@@ -6,7 +6,8 @@ data), how the detectors were built and checked, and five years of results, and 
 interactive heat map of every vessel sighting from October 2021 to October 2026.
 
 The site is one static page: `index.html`, plus `img/` and `data/`. It needs no server or build step
-to view. Open `index.html` in a browser, or publish it with GitHub Pages.
+to view. Open `index.html` in a browser, or see it live at
+https://mikechirico.github.io/haiti-port-watch/.
 
 ## What's in the repository
 
