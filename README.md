@@ -8,19 +8,6 @@ interactive heat map of every vessel sighting from October 2021 to October 2026.
 The site is one static page: `index.html`, plus `img/` and `data/`. It needs no server or build step
 to view. Open `index.html` in a browser, or publish it with GitHub Pages.
 
-## Publish with GitHub Pages
-
-1. Create an empty repository on GitHub, then push this folder to it:
-   ```
-   git remote add origin https://github.com/<you>/haiti-port-watch.git
-   git push -u origin main
-   ```
-2. In the repository, go to **Settings → Pages**, set **Source** to *Deploy from a branch*, and pick
-   **main** and **/ (root)**.
-3. The site appears at `https://<you>.github.io/haiti-port-watch/` within a minute or two.
-
-`.nojekyll` tells GitHub Pages to serve the files as they are.
-
 ## What's in the repository
 
 | Path | Contents |
