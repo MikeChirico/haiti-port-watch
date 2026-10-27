@@ -9,8 +9,12 @@ Step 2: port imagery for the story.
   img/pixel.png                      the 175 m ship at native 10 m pixels
   img/cloudy.jpg                     rejected cloudy pass, Port-au-Prince 2022-04-18 (L2A true colour)
   img/review_tool.jpg                crop of optical_ml/exports/images/fig7_review_tool.png
-Detection boxes for each crop go to build/work/meta.json. Detections are the COUNTED set
-(pier filter applied) minus the static-location mask, as in the exports.
+Detection boxes for each crop go to build/work/meta.json. They start from the COUNTED set (pier
+filter applied, static-location mask removed, as in the exports), then the manual review of that
+date is applied: detections a reviewer marked Invalid are dropped, a corrected box moves the
+detection to the corrected box's centre, and vessels the reviewer added are drawn too
+(src "added", no length estimate). So the story's example images show reviewed vessels, and their
+counts can differ from the exported CSVs for those days.
 
 Every date used here must also be queued for manual review:
 Haiti_gw/review_app/make_story_review.py (STORY_DATES).
@@ -26,11 +30,44 @@ from rasterio.transform import from_bounds
 from rasterio.warp import Resampling, reproject, transform_bounds
 from rasterio.windows import from_bounds as win_from_bounds
 
-from common import IMG, OML, PAPBOX, is_masked, load_meta, save_meta, tci_href
+import json
+
+from common import IMG, OML, PAPBOX, REVIEW, is_masked, load_meta, save_meta, tci_href
 
 SZ = pd.read_csv(OML / "vessel_size" / "detections_size.csv")
 SZ = SZ[SZ.counted_filtered]
 SZ = SZ[[not is_masked(s, lo, la) for s, lo, la in zip(SZ.site, SZ.lon, SZ.lat)]]
+
+
+STATE = json.loads((REVIEW / "review_state.json").read_text())
+ADDED = json.loads((REVIEW / "manual_additions.geojson").read_text())["features"]
+
+
+def review_id(site, item_id, lon, lat):
+    """Same id the review app uses (review_app/project.py detection_id)."""
+    return f"{site}|optical|{item_id}|{round(lon, 4)}_{round(lat, 4)}"
+
+
+def reviewed_vessels(site, date):
+    """[(lon, lat, length_m or None, type or None, src)] for one date, after the manual review."""
+    item_id = json.loads(next((OML / "daily5y" / "pass_detections" / site).glob(f"{site}_{date}_*.geojson"))
+                         .read_text())["item_id"]
+    out = []
+    for r in SZ[(SZ.site == site) & (SZ.date == date)].itertuples():
+        rec = STATE.get(review_id(site, item_id, r.lon, r.lat), {})
+        if rec.get("status") == "invalid":
+            continue
+        lon, lat = r.lon, r.lat
+        if rec.get("corrected_box"):
+            ring = rec["corrected_box"]["coordinates"][0][:-1]
+            lon, lat = sum(p[0] for p in ring) / len(ring), sum(p[1] for p in ring) / len(ring)
+        out.append((lon, lat, round(r.length_m), r.type, "open" if r.source == "ai2" else "dock"))
+    for f in ADDED:
+        p = f["properties"]
+        if p.get("site") == site and p.get("item_id") == item_id:
+            ring = f["geometry"]["coordinates"][0][:-1]
+            out.append((sum(q[0] for q in ring) / len(ring), sum(q[1] for q in ring) / len(ring), None, None, "added"))
+    return out
 
 
 def jpg(a, name, q=84):
@@ -76,12 +113,11 @@ def chip(site, date, box, name, scale=2):
     im = Image.fromarray(crop).resize((crop.shape[1] * scale, crop.shape[0] * scale), Image.LANCZOS)
     im.save(IMG / name, quality=86, optimize=True, progressive=True)
     boxes = []
-    for r in SZ[(SZ.site == site) & (SZ.date == date)].itertuples():
-        c, rr = ~T * tf.transform(r.lon, r.lat)
+    for lon, lat, length, vtype, src in reviewed_vessels(site, date):
+        c, rr = ~T * tf.transform(lon, lat)
         x, y = (c - c0) / (c1 - c0), (rr - r0) / (r1 - r0)
         if 0 <= x <= 1 and 0 <= y <= 1:
-            boxes.append(dict(x=round(x, 4), y=round(y, 4), len=round(r.length_m), type=r.type,
-                              src="open" if r.source == "ai2" else "dock"))
+            boxes.append(dict(x=round(x, 4), y=round(y, 4), len=length, type=vtype, src=src))
     return dict(w=im.width, h=im.height, px_m=10 / scale, boxes=boxes, km=[(c1 - c0) / 100, (r1 - r0) / 100])
 
 

@@ -24,6 +24,9 @@ WORK.mkdir(parents=True, exist_ok=True)
 os.environ.setdefault("GDAL_DISABLE_READDIR_ON_OPEN", "EMPTY_DIR")
 os.environ.setdefault("CPL_VSIL_CURL_ALLOWED_EXTENSIONS", ".tif")
 
+# manual review of every story example date (Haiti_gw/review_app/make_story_review.py)
+REVIEW = HAITI_GW / "review_projects" / "story_map_check" / "review_data"
+
 # Port-au-Prince bay view used by the hero image and the before/after slider
 PAPBOX = (-72.405, 18.535, -72.335, 18.585)
 
