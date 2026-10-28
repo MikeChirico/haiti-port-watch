@@ -14,12 +14,15 @@ filter applied, static-location mask removed, as in the exports), then the manua
 date is applied: detections a reviewer marked Invalid are dropped, a corrected box moves the
 detection to the corrected box's centre, and vessels the reviewer added are drawn too
 (src "added", no length estimate). So the story's example images show reviewed vessels, and their
-counts can differ from the exported CSVs for those days.
+counts can differ from the exported CSVs for those days. A box the reviewer moved by more than
+30 m loses its length label: the size model measured the original detection, not the new target.
+Also writes img/og.jpg, the 1200 x 630 link-preview image (from the hero crop).
 
 Every date used here must also be queued for manual review:
 Haiti_gw/review_app/make_story_review.py (STORY_DATES).
 """
 import glob
+import math
 
 import numpy as np
 import pandas as pd
@@ -39,6 +42,7 @@ SZ = SZ[SZ.counted_filtered]
 SZ = SZ[[not is_masked(s, lo, la) for s, lo, la in zip(SZ.site, SZ.lon, SZ.lat)]]
 
 
+MOVED_M = 30   # 3 pixels
 STATE = json.loads((REVIEW / "review_state.json").read_text())
 ADDED = json.loads((REVIEW / "manual_additions.geojson").read_text())["features"]
 
@@ -57,11 +61,15 @@ def reviewed_vessels(site, date):
         rec = STATE.get(review_id(site, item_id, r.lon, r.lat), {})
         if rec.get("status") == "invalid":
             continue
-        lon, lat = r.lon, r.lat
+        lon, lat, length = r.lon, r.lat, round(r.length_m)
         if rec.get("corrected_box"):
             ring = rec["corrected_box"]["coordinates"][0][:-1]
             lon, lat = sum(p[0] for p in ring) / len(ring), sum(p[1] for p in ring) / len(ring)
-        out.append((lon, lat, round(r.length_m), r.type, "open" if r.source == "ai2" else "dock"))
+            # the size model measured the ORIGINAL detection; once a reviewer moves the box onto a
+            # different target (more than MOVED_M), that length no longer describes it, so drop it
+            if math.hypot((lon - r.lon) * 111320 * math.cos(math.radians(lat)), (lat - r.lat) * 110540) > MOVED_M:
+                length = None
+        out.append((lon, lat, length, r.type, "open" if r.source == "ai2" else "dock"))
     for f in ADDED:
         p = f["properties"]
         if p.get("site") == site and p.get("item_id") == item_id:
@@ -140,6 +148,10 @@ def main():
     meta["map_cap"] = [[19.70, -72.27], [19.81, -72.11]]
 
     meta["hero"] = meta["after"] = chip("port_au_prince_main", "2026-05-02", PAPBOX, "hero.jpg")
+    hero = Image.open(IMG / "hero.jpg")   # link preview: 1200 x 630 from the left of the bay, ships included
+    w = hero.width; h = round(w * 630 / 1200)
+    hero.crop((0, (hero.height - h) // 2, w, (hero.height - h) // 2 + h)).resize((1200, 630), Image.LANCZOS) \
+        .save(IMG / "og.jpg", quality=84, optimize=True, progressive=True)
     meta["before"] = chip("port_au_prince_main", "2023-03-14", PAPBOX, "before.jpg")
     meta["cap"] = chip("cap_haitien_port", "2023-10-10", (-72.205, 19.744, -72.170, 19.765), "cap_anchorage.jpg",
                        scale=3)

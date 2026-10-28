@@ -9,6 +9,7 @@ Step 5: data/story_data.json, everything the page's charts and map read.
   val    56 reviewed passes: [site, date, pipeline count, reviewer count], computed exactly as
          optical_ml/make_readme_images.py fig6 (held-out pier-filter scores, static mask)
   mask   the static-location mask and how much it removed
+  latest each port's most recent counted day, for "latest clear look"
   meta   crop geometry and boxes from steps 1-4 (build/work/meta.json)
 Also copies the two exported CSVs to data/, where the dashboard offers them for download.
 """
@@ -57,6 +58,13 @@ def main():
     daily = pd.read_csv(OML / "exports" / "haiti_ports_vessel_counts_daily.csv")
     obs = [[SITES.index(r.site_id), (dt.date.fromisoformat(r.date) - D0).days]
            for r in daily[daily.status == "observed"].itertuples()]
+    # each port's most recent counted day ("latest clear look"; queued for review by make_story_review.py)
+    latest = {}
+    for s in SITES:
+        r = daily[(daily.site_id == s) & (daily.status == "observed")].sort_values("date").iloc[-1]
+        latest[s] = dict(date=r.date, vessels=float(r.vessels), ge60m=float(r.vessels_ge60m),
+                         cargo=float(r.vessels_cargo_tanker))
+    export_end = daily.date.max()
 
     review = json.loads((OML / "timeseries" / "review_sample" / "score.json").read_text())["per_pass"]
     passes = {(r["site"], r["date"]) for r in csv.DictReader(open(OML / "daily5y" / "pass_counts.csv"))}
@@ -82,7 +90,7 @@ def main():
     DATA.parent.mkdir(exist_ok=True)
     for name in ("haiti_ports_vessel_counts_daily.csv", "haiti_ports_vessel_counts_monthly.csv"):
         shutil.copy2(OML / "exports" / name, DATA.parent / name)
-    DATA.write_text(json.dumps(dict(pts=pts, types=TYPES, sites=SITES, mon=mon, obs=obs, val=val, mask=mask,
+    DATA.write_text(json.dumps(dict(pts=pts, types=TYPES, sites=SITES, mon=mon, obs=obs, val=val, mask=mask, latest=latest, export_end=export_end,
                                     meta=load_meta(), d0=str(D0)), separators=(",", ":")))
 
 

@@ -16,7 +16,7 @@ https://mikechirico.github.io/haiti-port-watch/.
 |---|---|
 | `index.html` | The story. Styles, scripts and data are inline; it loads Leaflet 1.9.4 from cdnjs and fonts from Google Fonts |
 | `dashboard.html` | Data dashboard: map, monthly chart and summary linked by port, vessel type and a draggable period, plus a sortable monthly table that downloads as CSV |
-| `img/` | Sentinel-2 imagery rendered for the story (about 2.5 MB) |
+| `img/` | Sentinel-2 imagery rendered for the story (about 2.6 MB), including `og.jpg`, the link-preview image |
 | `data/story_data.json` | Vessel sightings, monthly counts, validation results and crop geometry. The same data is inlined in both pages |
 | `data/haiti_ports_vessel_counts_*.csv` | The project's full daily and monthly export, offered for download on the dashboard. Column definitions are in the export README (`Haiti_gw/optical_ml/exports/README.md`, section 11) |
 | `build/` | Scripts that regenerate `img/`, `data/` and the data in `index.html` from the analysis project |
@@ -63,6 +63,14 @@ the project's review app, so that nothing in the story rests on an unchecked cou
 change an example date, add it to `STORY_DATES` in `Haiti_gw/review_app/make_story_review.py` and run
 that script. Avoid days with two satellite passes as examples, because the image, the detections and
 the size estimates can come from different passes.
+
+## How to cite
+
+> Haiti Port Watch (2026). Vessel counts at Port-au-Prince, Cap-Haïtien and Port Lafito from Sentinel-2
+> satellite imagery, October 2021 – October 2026. Export of 22 October 2026.
+> https://mikechirico.github.io/haiti-port-watch/
+
+When reusing the data, also include "Contains modified Copernicus Sentinel data 2021–2026".
 
 ## Credits
 
