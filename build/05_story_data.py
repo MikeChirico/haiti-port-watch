@@ -9,7 +9,8 @@ Step 5: data/story_data.json, everything the page's charts and map read.
   val    56 reviewed passes: [site, date, pipeline count, reviewer count], computed exactly as
          optical_ml/make_readme_images.py fig6 (held-out pier-filter scores, static mask)
   mask   the static-location mask and how much it removed
-  latest each port's most recent counted day, for "latest clear look"
+  latest each port's most recent counted day, for "latest clear look": export counts, plus the
+         reviewed count once that date's manual review is complete (the pages show that one)
   meta   crop geometry and boxes from steps 1-4 (build/work/meta.json)
 Also copies the two exported CSVs to data/, where the dashboard offers them for download.
 """
@@ -24,11 +25,23 @@ import joblib
 import numpy as np
 import pandas as pd
 
-from common import DATA, OML, is_masked, load_meta
+from common import DATA, OML, REVIEW, is_masked, load_meta
 
 SITES = ["port_au_prince_main", "cap_haitien_port", "port_lafito"]
 TYPES = ["cargo", "tanker", "service", "passenger", "fishing", "pleasure", "enforcement", "sar"]
 D0 = dt.date(2021, 10, 1)
+
+
+def reviewed_count(site, date):
+    """Vessels on one date after the manual review (confirmed detections + added boxes), or None
+    if that date's scene check isn't finished. Same rule as the example images in step 2."""
+    state = json.loads((REVIEW / "review_state.json").read_text())
+    recs = [(k, v) for k, v in state.items() if v.get("site") == site and v.get("date") == date]
+    if not any(k.endswith("|scene") and v.get("status") in ("valid", "invalid") for k, v in recs):
+        return None
+    added = json.loads((REVIEW / "manual_additions.geojson").read_text())["features"]
+    return (sum(1 for k, v in recs if not k.endswith("|scene") and v.get("status") == "valid")
+            + sum(1 for f in added if f["properties"].get("site") == site and f["properties"].get("date") == date))
 
 
 def nan(v):
@@ -63,7 +76,7 @@ def main():
     for s in SITES:
         r = daily[(daily.site_id == s) & (daily.status == "observed")].sort_values("date").iloc[-1]
         latest[s] = dict(date=r.date, vessels=float(r.vessels), ge60m=float(r.vessels_ge60m),
-                         cargo=float(r.vessels_cargo_tanker))
+                         cargo=float(r.vessels_cargo_tanker), reviewed=reviewed_count(s, r.date))
     export_end = daily.date.max()
 
     review = json.loads((OML / "timeseries" / "review_sample" / "score.json").read_text())["per_pass"]
