@@ -744,6 +744,17 @@ p{margin:0 0 1.1em}
 .src p{font-size:15.5px;line-height:1.5;color:var(--ink-2);margin:0}
 .src.yes{grid-column:1/-1}
 .src.yes p{max-width:62ch}
+.twohead{margin-top:6px!important}
+.twoway{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:4px 0 2px}
+.way{border:1px solid var(--rule);border-top:3px solid var(--sea);border-radius:3px;padding:14px 16px;min-width:0;display:flex;flex-direction:column;gap:6px}
+.way.dock{border-top-color:var(--dock)}
+.way .wl{font-family:var(--ui);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.way h4{font-family:var(--display);font-weight:500;font-size:19px;margin:0}
+.way p{font-size:15px!important}
+.way .alone{border-top:1px dashed var(--rule);padding-top:8px;margin-top:2px!important}
+.way .alone b{color:var(--ink)}
+.together{color:var(--ink)!important;font-weight:600}
+@media (max-width:760px){.twoway{grid-template-columns:1fr}}
 .src .stat{font-family:var(--ui);font-size:13px;color:var(--muted);margin-top:auto;padding-top:6px}
 
 /* funnel */
@@ -1004,7 +1015,23 @@ footer{border-top:1px solid var(--rule);margin-top:64px;padding-block:28px 60px;
       <div class="verdict"><i></i>What worked</div>
       <h3>Optical satellites</h3>
       <p>Free Sentinel-2 imagery shows ships as small bright hulls on dark water. With the right detectors, every clear image becomes a count, going back years.</p>
-      <div class="stat">Agrees with human reviewers: r = 0.95.</div>
+      <p class="twohead"><b>Two detectors, each covering the other’s blind spot.</b> Ships at anchor and ships tied up at a pier look completely different from orbit, so no single method finds both.</p>
+      <div class="twoway">
+        <div class="way sea">
+          <div class="wl">For ships at anchor</div>
+          <h4>An AI ship detector</h4>
+          <p>A machine-learning model trained on about 37,000 labelled ships worldwide picks out hulls on open water.</p>
+          <p class="alone"><b>Alone, it misses the piers.</b> At 10-metre resolution a ship tied up alongside a concrete quay blends into it. In an early test on 62 hand-labelled images, the detector found 74% of ships at anchor but none of the 20 ships at a pier.</p>
+        </div>
+        <div class="way dock">
+          <div class="wl">For ships at the pier</div>
+          <h4>Water or not water</h4>
+          <p>For each pixel along the piers, five years of images show how often it is open water. A spot that is usually water but isn’t today probably has a ship in it.</p>
+          <p class="alone"><b>Alone, it raises false alarms.</b> Shadows, wet concrete, tides, moored barges and construction also turn water into “not water”. On its own it was right only 42% of the time, so a trained filter checks every candidate before it is counted.</p>
+        </div>
+      </div>
+      <p class="together">Together, in the same test, they found 80% of all ships, including 12 of the 20 at the pier.</p>
+      <div class="stat">Final counts agree with human reviewers: r = 0.95.</div>
     </div>
   </div>
 </section>
