@@ -10,11 +10,14 @@ Step 5: data/story_data.json, everything the page's charts and map read.
          optical_ml/make_readme_images.py fig6 (held-out pier-filter scores, static mask)
   mask   the static-location mask and how much it removed
   meta   crop geometry and boxes from steps 1-4 (build/work/meta.json)
+Also copies the two exported CSVs to data/, where the dashboard offers them for download.
 """
 import csv
 import datetime as dt
 import glob
 import json
+
+import shutil
 
 import joblib
 import numpy as np
@@ -45,8 +48,11 @@ def main():
             0 if r.source == "ai2" else 1, int(round(r.length_m)), TYPES.index(r.type)] for r in sz.itertuples()]
 
     M = pd.read_csv(OML / "exports" / "haiti_ports_vessel_counts_monthly.csv")
+    # [month, clear days, mean, open water, pier, >=60 m, low confidence, cargo/tanker, SE, min, max]
+    # (the story reads 0-6; the dashboard reads all of them)
     mon = {s: [[r.month, r.days_observed, nan(r.vessels_mean), nan(r.open_water_mean), nan(r.docked_mean),
-                nan(r.ge60m_mean), str(r.low_confidence).upper() == "TRUE"] for r in M[M.site_id == s].itertuples()]
+                nan(r.ge60m_mean), str(r.low_confidence).upper() == "TRUE", nan(r.cargo_tanker_mean),
+                nan(r.vessels_se), nan(r.vessels_min), nan(r.vessels_max)] for r in M[M.site_id == s].itertuples()]
            for s in SITES}
     daily = pd.read_csv(OML / "exports" / "haiti_ports_vessel_counts_daily.csv")
     obs = [[SITES.index(r.site_id), (dt.date.fromisoformat(r.date) - D0).days]
@@ -74,6 +80,8 @@ def main():
           f"r = {np.corrcoef(v.T)[0, 1]:.3f}; {len(pts)} sightings; {mask['n']} masked")
 
     DATA.parent.mkdir(exist_ok=True)
+    for name in ("haiti_ports_vessel_counts_daily.csv", "haiti_ports_vessel_counts_monthly.csv"):
+        shutil.copy2(OML / "exports" / name, DATA.parent / name)
     DATA.write_text(json.dumps(dict(pts=pts, types=TYPES, sites=SITES, mon=mon, obs=obs, val=val, mask=mask,
                                     meta=load_meta(), d0=str(D0)), separators=(",", ":")))
 

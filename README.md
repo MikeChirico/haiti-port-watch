@@ -5,7 +5,8 @@ from free satellite imagery. It covers why no other source works (Haiti has no u
 data), how the detectors were built and checked, and five years of results, and it ends with an
 interactive heat map of every vessel sighting from October 2021 to October 2026.
 
-The site is one static page: `index.html`, plus `img/` and `data/`. It needs no server or build step
+The site is two static pages: the story (`index.html`) and a data dashboard (`dashboard.html`), plus
+`img/` and `data/`. It needs no server or build step
 to view. Open `index.html` in a browser, or see it live at
 https://mikechirico.github.io/haiti-port-watch/.
 
@@ -14,8 +15,10 @@ https://mikechirico.github.io/haiti-port-watch/.
 | Path | Contents |
 |---|---|
 | `index.html` | The story. Styles, scripts and data are inline; it loads Leaflet 1.9.4 from cdnjs and fonts from Google Fonts |
+| `dashboard.html` | Data dashboard: map, monthly chart and summary linked by port, vessel type and a draggable period, plus a sortable monthly table that downloads as CSV |
 | `img/` | Sentinel-2 imagery rendered for the story (about 2.5 MB) |
-| `data/story_data.json` | Vessel sightings, monthly counts, validation results and crop geometry. The same data is inlined in `index.html` |
+| `data/story_data.json` | Vessel sightings, monthly counts, validation results and crop geometry. The same data is inlined in both pages |
+| `data/haiti_ports_vessel_counts_*.csv` | The project's full daily and monthly export, offered for download on the dashboard. Column definitions are in the export README (`Haiti_gw/optical_ml/exports/README.md`, section 11) |
 | `build/` | Scripts that regenerate `img/`, `data/` and the data in `index.html` from the analysis project |
 
 ## Where the numbers come from
@@ -46,8 +49,8 @@ python 01_national_mosaic.py      # Haiti background mosaic, downloads COG overv
 python 02_port_imagery.py         # port backgrounds, example crops, cloudy pass, review-tool crop
 python 03_pier_panels.py          # the three pier water-flip panels
 python 04_static_object_strip.py  # "the ship that never moved" strip
-python 05_story_data.py           # data/story_data.json
-python 06_build_page.py           # inline the data and the strip into index.html
+python 05_story_data.py           # data/story_data.json, and copies the two CSVs into data/
+python 06_build_page.py           # inline the data into index.html and dashboard.html
 ```
 
 Steps 2–6 reproduce the committed files exactly. Step 1 searches a live catalogue, so a rebuild may

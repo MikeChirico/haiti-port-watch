@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Step 6: inline data/story_data.json into index.html (the `const DATA = ...;` line), so the page
-renders with no fetch and works when opened straight from disk.
+Step 6: inline data/story_data.json into index.html and dashboard.html (the `const DATA = ...;`
+line), so both pages render with no fetch and work when opened straight from disk.
 
 The image strip in the "ship that never moved" section is written into the HTML too, from
 meta.wreck, so its dates and captions always match the images built in step 4.
@@ -28,6 +28,14 @@ def main():
         raise SystemExit(f"index.html markers not found (wreck strip: {n1}, DATA: {n2})")
     page.write_text(s)
     print(f"index.html updated ({len(s) // 1024} KB)")
+
+    dash = REPO / "dashboard.html"
+    d, n = re.subn(r"const DATA = .*?;\n</script>", lambda m: f"const DATA = {data};\n</script>", dash.read_text(),
+                   count=1, flags=re.S)
+    if n != 1:
+        raise SystemExit("dashboard.html DATA marker not found")
+    dash.write_text(d)
+    print(f"dashboard.html updated ({len(d) // 1024} KB)")
 
 
 if __name__ == "__main__":
