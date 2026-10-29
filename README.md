@@ -1,6 +1,6 @@
 # Haiti Port Watch
 
-A scrolling story for donors and stakeholders about counting cargo ships at Haiti's ports
+A scrolling story about counting cargo ships at Haiti's ports
 from free satellite imagery. It covers why no other source works (Haiti has no usable ship-tracking
 data), how the detectors were built and checked, and five years of results, and it ends with an
 interactive heat map of every vessel sighting from October 2021 to October 2026.
