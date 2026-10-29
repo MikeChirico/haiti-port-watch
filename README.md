@@ -15,7 +15,7 @@ https://mikechirico.github.io/haiti-port-watch/.
 | Path | Contents |
 |---|---|
 | `index.html` | The story. Styles, scripts and data are inline; it loads Leaflet 1.9.4 from cdnjs and fonts from Google Fonts |
-| `dashboard.html` | Data dashboard: map, monthly chart and summary linked by port, vessel type and a draggable period, plus a sortable monthly table that downloads as CSV |
+| `dashboard.html` | Data dashboard over the full record: port summaries, monthly chart and a sortable monthly table, plus a heat map that can be filtered by date. Downloads are the full daily and monthly CSVs |
 | `img/` | Sentinel-2 imagery rendered for the story (about 2.6 MB), including `og.jpg`, the link-preview image |
 | `data/story_data.json` | Vessel sightings, monthly counts, validation results and crop geometry. The same data is inlined in both pages |
 | `data/haiti_ports_vessel_counts_*.csv` | The project's full daily and monthly export, offered for download on the dashboard. Column definitions are in the export README (`Haiti_gw/optical_ml/exports/README.md`, section 11) |

@@ -735,6 +735,7 @@ h1 span{color:var(--muted);font-family:var(--ui);font-size:13px;font-weight:500;
 .kpi .p{font-size:13px;font-weight:600;display:flex;justify-content:space-between;gap:8px}
 .kpi .v{font-family:var(--display);font-size:38px;line-height:1.05;font-weight:500;margin-top:6px;font-variant-numeric:tabular-nums}
 .kpi .v small{font-family:var(--ui);font-size:13px;color:var(--muted);font-weight:400;margin-left:6px}
+.kpi .s b{color:var(--ink)}
 .kpi .s{font-size:12.5px;color:var(--ink-2);margin-top:4px;display:flex;flex-wrap:wrap;gap:4px 14px;font-variant-numeric:tabular-nums}
 .chg{font-weight:600}
 .kpi .lastlook{border-top:1px solid var(--rule);margin-top:9px;padding-top:7px;color:var(--muted)}
@@ -757,6 +758,13 @@ h1 span{color:var(--muted);font-family:var(--ui);font-size:13px;font-weight:500;
 .leaflet-control-attribution a{color:#a9b6be!important}
 .leaflet-bar a{background:#0d1319!important;color:#dfe6ea!important;border-color:#25313b!important}
 .plabel{font-family:var(--ui);font-size:12px;font-weight:600;color:#e9eef1;white-space:nowrap;text-shadow:0 1px 3px #000,0 0 8px #000}
+.maptl{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center;padding:10px 16px 2px;border-top:1px solid var(--night-rule)}
+.maptl .play{background:#e9eef1;color:#0a0e12;border-color:#3a4853}
+.tl{min-width:0}
+.tl svg{display:block;width:100%;height:54px;cursor:crosshair;touch-action:none}
+.tlr{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12px;color:var(--night-muted);font-variant-numeric:tabular-nums}
+.tlr span{color:#fff;font-weight:600}
+.tlreset{font-family:var(--ui);font-size:12px;color:#9cc4f5;background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
 .mapfoot{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 16px 12px;font-size:12px;color:var(--night-muted);flex-wrap:wrap}
 .heatkey{display:flex;align-items:center;gap:8px}
 .heatkey i{width:110px;height:7px;border-radius:2px;background:linear-gradient(90deg,rgba(22,40,110,.6),#2a78d6 35%,#eb6834 65%,#ffc15e 85%,#fff6d8)}
@@ -831,7 +839,7 @@ footer{border-top:1px solid var(--rule);margin-top:20px;padding-block:18px 40px;
         <button type="button" data-v="big" aria-pressed="false">60 m or longer</button>
         <button type="button" data-v="cargo" aria-pressed="false">Cargo &amp; tanker</button>
       </div></div>
-    <div class="ctl range"><span>Period</span><b id="rangeTxt"></b><button type="button" class="linkbtn" id="rangeYear">Latest full year</button><button type="button" class="linkbtn" id="rangeReset">All five years</button></div>
+    <div class="ctl range"><span>Data</span><b>Full record, Oct 2021 – Oct 2026</b></div>
   </div>
 
   <div class="kpis" id="kpis"></div>
@@ -840,21 +848,25 @@ footer{border-top:1px solid var(--rule);margin-top:20px;padding-block:18px 40px;
     <section class="card mapcard" aria-label="Map of vessel sightings">
       <div class="hd"><h2>Where vessels were seen</h2><p class="mapcount" id="mapCount"></p></div>
       <div class="mapbox"><div id="map"></div><canvas id="heat"></canvas></div>
-      <div class="mapfoot"><span class="heatkey">fewer<i></i>more sightings</span><span>Dashed: count areas. Orange ring: masked fixed object.</span></div>
+      <div class="maptl">
+        <button class="play" id="play" type="button" aria-label="Play the map through time"><svg viewBox="0 0 14 14" id="playIcon"><path d="M3 1.5v11l9-5.5z" fill="currentColor"/></svg></button>
+        <div class="tl"><svg id="tlSvg" aria-label="Monthly sightings; drag to choose which months the map shows"></svg>
+          <div class="tlr"><span id="tlFrom"></span><button type="button" class="tlreset" id="tlReset" hidden>Show all months</button><span id="tlTo"></span></div></div>
+      </div>
+      <div class="mapfoot"><span class="heatkey">fewer<i></i>more sightings</span><span>Drag the timeline to filter the map by date. Dashed: count areas. Orange ring: masked fixed object.</span></div>
     </section>
     <section class="card" aria-label="Monthly vessels per clear day">
       <div class="hd"><h2>Vessels per clear day, by month</h2>
-        <div style="display:flex;gap:12px;align-items:center"><div class="legend" id="legend"></div>
-        <button class="play" id="play" type="button" aria-label="Play through time"><svg viewBox="0 0 14 14" id="playIcon"><path d="M3 1.5v11l9-5.5z" fill="currentColor"/></svg></button></div></div>
+        <div class="legend" id="legend"></div></div>
       <div class="chartbox" id="chart"></div>
-      <div class="hint">Drag across the chart to choose a period; the map, the summary and the table follow. Double-click to show all.</div>
+      <div class="hint">Full record. Hover a bar for that month’s figures. Choosing a port highlights its row.</div>
     </section>
   </div>
 
   <section class="card tablecard" aria-label="Monthly table">
     <div class="hd"><h2>Monthly figures</h2>
       <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><p id="tableNote"></p>
-      <button type="button" class="btn primary" id="dlView"><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1.5v8M3.5 6L7 9.5 10.5 6M2 12.5h10" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>Download this table</button></div></div>
+      <a class="btn primary" href="data/haiti_ports_vessel_counts_monthly.csv" download><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1.5v8M3.5 6L7 9.5 10.5 6M2 12.5h10" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>Download full monthly data</a></div></div>
     <div class="tablewrap"><table id="tbl"><thead></thead><tbody></tbody></table></div>
   </section>
 
@@ -866,7 +878,7 @@ footer{border-top:1px solid var(--rule);margin-top:20px;padding-block:18px 40px;
       <p class="ctext" id="citeText">Haiti Port Watch (2026). Vessel counts at Port-au-Prince, Cap-Haïtien and Port Lafito from Sentinel-2 satellite imagery, October 2021 – October 2026. Export of 22 October 2026. https://mikechirico.github.io/haiti-port-watch/</p>
       <button type="button" class="btn" id="copyCite">Copy citation</button>
       <p>When you reuse the data, credit Haiti Port Watch and include “Contains modified Copernicus Sentinel data 2021–2026”. Counts are snapshots on clear days; read the notes on this page before comparing them with other sources.</p></div>
-    <div><b>Downloads</b>The daily and monthly CSVs are the project's full export. “Download this table” saves the rows shown above, for the chosen port, period and vessel type.</div>
+    <div><b>Downloads</b>The daily and monthly CSVs are the project's full export, every port and every day or month from October 2021 to October 2026. The table above shows the same monthly data.</div>
   </div>
 </main>
 <footer><div class="wrap">Contains modified Copernicus Sentinel data 2021–2026 (ESA / European Commission). Open-water detector and vessel size model: Allen Institute for AI. Map: Leaflet. Export of 22 October 2026.</div></footer>
@@ -890,7 +902,7 @@ const monthLabel = i => { const [y,m]=monthKey(i).split('-'); return MONTHS[+m-1
 const MEASURES = {all:{label:'All vessels',col:2}, big:{label:'60 m or longer',col:5}, cargo:{label:'Cargo & tanker',col:7}};
 const keyIdx = k => DATA.mon[SITES[0]].findIndex(r=>r[0]===k);
 const YEAR = (()=>{ const lastFullSep = [...DATA.mon[SITES[0]]].reverse().find(r=>r[0].endsWith('-09') && r[0] < DATA.export_end.slice(0,7)); const b=keyIdx(lastFullSep[0]); return [b-11, b]; })();
-const st = {port:'all', measure:'all', r0:YEAR[0], r1:YEAR[1]};
+const st = {port:'all', measure:'all', r0:0, r1:NM-1};   // r0..r1: months the HEAT MAP shows; everything else always shows the full record
 
 /* ---------- summary tiles ---------- */
 function periodMean(si, a, b){
@@ -903,16 +915,14 @@ function lastLook(si){
   return `${+dd} ${MONTHS[+m-1]} ${y} · <b>${Math.round(v*10)/10}</b> vessel${v===1?'':'s'}${rv?' (reviewed)':''}`;
 }
 function kpis(){
-  const len = st.r1-st.r0+1, p0 = st.r0-len;
+  const yr = `${monthKey(YEAR[0]).slice(0,4)}–${monthKey(YEAR[1]).slice(2,4)}`;
   $('#kpis').innerHTML = ORDER.map(si=>{
-    const cur = periodMean(si, st.r0, st.r1), prev = p0>=0 ? periodMean(si, p0, st.r0-1) : null;
-    let chg='';
-    if (prev && prev.mean && cur.mean!=null){ const c=(cur.mean/prev.mean-1)*100; chg=`<span class="chg ${c>=0?'up':'down'}">${c>=0?'+':''}${c.toFixed(0)}% vs previous ${len} mo</span>`; }
-    let sightings=0; for (let i=0;i<pts.length;i++){ const p=pts[i]; if(p[3]===si && mIdx[i]>=st.r0 && mIdx[i]<=st.r1 && pass(p)) sightings++; }
+    const all = periodMean(si, 0, NM-1), last = periodMean(si, YEAR[0], YEAR[1]);
+    let sightings=0; for (let i=0;i<pts.length;i++){ const p=pts[i]; if(p[3]===si && pass(p)) sightings++; }
     return `<button type="button" class="kpi" data-v="${si}" aria-pressed="${String(st.port)===String(si)}">
       <div class="p"><span>${PORTS[si]}</span></div>
-      <div class="v">${cur.mean==null?'–':cur.mean.toFixed(1)}<small>${MEASURES[st.measure].label.toLowerCase()} per clear day</small></div>
-      <div class="s"><span>${cur.days} clear days</span><span>${sightings.toLocaleString('en-US')} sightings</span>${chg}</div>
+      <div class="v">${all.mean==null?'–':all.mean.toFixed(1)}<small>${MEASURES[st.measure].label.toLowerCase()} per clear day, 2021–2026</small></div>
+      <div class="s"><span>${yr}: <b>${last.mean==null?'–':last.mean.toFixed(1)}</b></span><span>${all.days} clear days</span><span>${sightings.toLocaleString('en-US')} sightings</span></div>
       <div class="s lastlook">Latest clear look: ${lastLook(si)}</div></button>`;
   }).join('');
 }
@@ -968,13 +978,16 @@ function drawHeat(){
   octx.putImageData(im,0,0);
   ctx.setTransform(1,0,0,1,0,0); ctx.clearRect(0,0,cv.width,cv.height); ctx.imageSmoothingQuality='high';
   ctx.drawImage(off,0,0,gw*S*dpr,gh*S*dpr);
-  $('#mapCount').innerHTML = `<b>${n.toLocaleString('en-US')}</b> sightings · ${monthLabel(st.r0)} – ${monthLabel(st.r1)}`;
 }
 let raf=0; const redraw=()=>{ cancelAnimationFrame(raf); raf=requestAnimationFrame(drawHeat); };
+/* a change to the map's months: timeline and count update at once, the heat layer on the next frame */
+function mapCount(){ let n=0; for (let i=0;i<pts.length;i++) if (pass(pts[i]) && mIdx[i]>=st.r0 && mIdx[i]<=st.r1) n++;
+  $('#mapCount').innerHTML = `<b>${n.toLocaleString('en-US')}</b> sightings · ${monthLabel(st.r0)} – ${monthLabel(st.r1)}`; }
+function mapRange(){ paintTL(); mapCount(); redraw(); }
 map.on('move zoom resize viewreset', redraw);
 new ResizeObserver(()=>{ map.invalidateSize(); redraw(); }).observe($('#map'));
 
-/* ---------- chart: three small multiples sharing one time axis and one brush ---------- */
+/* ---------- chart: three small multiples, full record, hover only ---------- */
 const host = $('#chart'); const tip = document.createElement('div'); tip.className='tip'; host.appendChild(tip);
 let geo = null;
 function legend(){
@@ -990,8 +1003,7 @@ function drawChart(){
   ymax = Math.max(2, Math.ceil(ymax/2)*2);
   const svg = el('svg',{viewBox:`0 0 ${W} ${H}`,role:'img','aria-label':'Monthly vessels per clear day for three ports'});
   host.insertBefore(svg, tip);
-  const brush = el('rect',{y:m.t-6,height:H-m.t-m.b+6,fill:css('--sea'),'fill-opacity':.08,stroke:css('--sea'),'stroke-opacity':.5},svg);
-  geo = {W,H,m,bw,rowH,gap,brush};
+  geo = {W,H,m,bw,rowH,gap};
   ORDER.forEach((si,ri)=>{
     const top = m.t + ri*(rowH+gap), sy = v => top + rowH - v/ymax*rowH;
     const dim = st.port!=='all' && String(st.port)!==String(si);
@@ -1000,7 +1012,7 @@ function drawChart(){
     title.addEventListener('click',()=>setPort(String(st.port)===String(si)?'all':String(si)));
     [0,ymax/2,ymax].forEach(v=>{ el('line',{x1:m.l,x2:W-m.r,y1:sy(v),y2:sy(v),stroke:css('--rule')},g); el('text',{x:m.l-5,y:sy(v)+4,'text-anchor':'end'},g).textContent=v; });
     DATA.mon[SITES[si]].forEach((r,i)=>{
-      const x = m.l+i*bw+0.75, w=Math.max(1,bw-1.5), inR = i>=st.r0 && i<=st.r1, op = inR ? 1 : .28;
+      const x = m.l+i*bw+0.75, w=Math.max(1,bw-1.5), op = 1;
       if (r[col]==null) return;
       if (st.measure==='all'){
         const o=r[3]||0, d=r[4]||0;
@@ -1012,38 +1024,27 @@ function drawChart(){
     });
   });
   for (let i=0;i<NM;i++){ const [y,mm]=monthKey(i).split('-'); if(mm==='01'){ const x=m.l+i*bw; el('line',{x1:x,x2:x,y1:H-m.b,y2:H-m.b+4,stroke:css('--muted')},svg); el('text',{x:x+2,y:H-m.b+16},svg).textContent=y; } }
-  paintBrush();
-  /* interaction layer: hover tooltip + drag to select */
-  const hit = el('rect',{x:m.l,y:m.t-6,width:W-m.l-m.r,height:H-m.t-m.b+6,fill:'transparent',style:'cursor:crosshair'},svg);
+  /* interaction layer: hover tooltip */
+  const hit = el('rect',{x:m.l,y:m.t-6,width:W-m.l-m.r,height:H-m.t-m.b+6,fill:'transparent',style:'cursor:default'},svg);
   const at = e => { const b=svg.getBoundingClientRect(); const x=(e.clientX-b.left)*W/b.width, y=(e.clientY-b.top)*H/b.height;
     return {i:Math.max(0,Math.min(NM-1,Math.floor((x-m.l)/bw))), row:Math.max(0,Math.min(2,Math.floor((y-m.t+gap/2)/(rowH+gap)))), px:e.clientX-host.getBoundingClientRect().left, py:e.clientY-host.getBoundingClientRect().top}; };
-  let drag=null;
-  hit.addEventListener('pointerdown',e=>{ stop(); hit.setPointerCapture(e.pointerId); const a=at(e); drag=a.i; st.r0=st.r1=a.i; update(false); });
   hit.addEventListener('pointermove',e=>{
     const a=at(e);
-    if (drag!=null){ st.r0=Math.min(drag,a.i); st.r1=Math.max(drag,a.i); update(false); tip.style.opacity=0; return; }
     const si=ORDER[a.row], r=DATA.mon[SITES[si]][a.i];
     const f = v => v==null ? '–' : v.toFixed(1);
     tip.innerHTML = `<b>${PORTS[si]} · ${monthLabel(a.i)}</b>` + (r[2]==null ? '<div style="color:var(--muted)">No clear days</div>' :
       `<div class="r"><span>Vessels / clear day</span><b>${f(r[2])}</b></div><div class="r"><span><i class="sw sea"></i>Open water</span><span>${f(r[3])}</span></div><div class="r"><span><i class="sw dock"></i>At the pier</span><span>${f(r[4])}</span></div><div class="r"><span>60 m or longer</span><span>${f(r[5])}</span></div><div class="r"><span>Cargo &amp; tanker</span><span>${f(r[7])}</span></div><div class="r" style="color:var(--muted)"><span>Clear days</span><span>${r[1]}${r[6]?' (low)':''}</span></div>`);
     tip.style.opacity=1; const tw=tip.offsetWidth; tip.style.left=Math.min(Math.max(0,a.px+14),host.clientWidth-tw)+'px'; tip.style.top=Math.max(0,a.py-tip.offsetHeight-10)+'px';
   });
-  const end=()=>{ if(drag!=null){ drag=null; update(true); } };
-  hit.addEventListener('pointerup',end); hit.addEventListener('pointercancel',end);
   hit.addEventListener('pointerleave',()=>{ tip.style.opacity=0; });
-  hit.addEventListener('dblclick',()=>{ st.r0=0; st.r1=NM-1; update(true); });
-}
-function paintBrush(){
-  if (!geo) return; const {m,bw,brush}=geo; const full = st.r0===0 && st.r1===NM-1;
-  brush.setAttribute('x', m.l+st.r0*bw); brush.setAttribute('width', (st.r1-st.r0+1)*bw); brush.setAttribute('visibility', full?'hidden':'visible');
 }
 
 /* ---------- table ---------- */
 const COLS = [['Port','port'],['Month','month'],['Clear days','days'],['Vessels / clear day','v'],['Open water','ow'],['At the pier','dk'],['60 m or longer','ge'],['Cargo & tanker','ct'],['Min','mn'],['Max','mx']];
 let sort = {k:'month', dir:-1};
 function rows(){
-  const out=[]; const sites = st.port==='all' ? ORDER : [+st.port];
-  sites.forEach(si=>{ for(let i=st.r0;i<=st.r1;i++){ const r=DATA.mon[SITES[si]][i];
+  const out=[];
+  ORDER.forEach(si=>{ for(let i=0;i<NM;i++){ const r=DATA.mon[SITES[si]][i];
     out.push({port:PORTS[si], site:SITES[si], month:r[0], days:r[1], v:r[2], ow:r[3], dk:r[4], ge:r[5], ct:r[7], mn:r[9], mx:r[10], low:r[6]}); } });
   out.sort((a,b)=>{ const x=a[sort.k], y=b[sort.k]; if(x===y) return a.port<b.port?-1:1; if(x==null) return 1; if(y==null) return -1; return (x<y?-1:1)*sort.dir; });
   return out;
@@ -1054,35 +1055,59 @@ function table(){
   const R = rows();
   $('#tbl tbody').innerHTML = R.map(r=>`<tr><td>${r.port}</td><td>${r.month}${r.low?'<span class="flag">low</span>':''}</td><td>${r.days}</td>`+
     ['v','ow','dk','ge','ct','mn','mx'].map(k=>`<td class="${r.v==null?'low':''}">${f(r[k])}</td>`).join('')+'</tr>').join('');
-  $('#tableNote').textContent = `${R.length} rows · ${st.port==='all'?'all ports':PORTS[+st.port]} · ${monthLabel(st.r0)} – ${monthLabel(st.r1)}`;
+  $('#tableNote').textContent = `${R.length} rows · all ports · ${monthLabel(0)} – ${monthLabel(NM-1)}`;
 }
 $('#tbl thead').addEventListener('click',e=>{ const th=e.target.closest('th'); if(!th) return; const k=th.dataset.k; sort = {k, dir: sort.k===k ? -sort.dir : (k==='port'||k==='month' ? 1 : -1)}; table(); });
-$('#dlView').addEventListener('click',()=>{
-  const head=['port','site_id','month','days_observed','vessels_mean','open_water_mean','docked_mean','ge60m_mean','cargo_tanker_mean','vessels_min','vessels_max','low_confidence'];
-  const esc = v => v==null ? '' : String(v);
-  const lines=[head.join(',')].concat(rows().map(r=>[r.port,r.site,r.month,r.days,r.v,r.ow,r.dk,r.ge,r.ct,r.mn,r.mx,r.low?'TRUE':'FALSE'].map(esc).join(',')));
-  const blob=new Blob([lines.join('\n')+'\n'],{type:'text/csv'}); const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob); a.download=`haiti_ports_monthly_${st.port==='all'?'all':SITES[+st.port]}_${monthKey(st.r0)}_${monthKey(st.r1)}.csv`;
-  document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 500);
-});
 
 /* ---------- state ---------- */
-function update(full){
-  $('#rangeTxt').textContent = monthLabel(st.r0)+' – '+monthLabel(st.r1);
-  $('#rangeReset').hidden = st.r0===0 && st.r1===NM-1;
-  $('#rangeYear').hidden = st.r0===YEAR[0] && st.r1===YEAR[1];
-  paintBrush(); redraw(); kpis();
-  if (full){ drawChart(); table(); }
-}
+function update(){ kpis(); drawChart(); table(); mapRange(); }
 function setPort(v){
   st.port=v; document.querySelectorAll('#fPort button').forEach(b=>b.setAttribute('aria-pressed', b.dataset.v===v));
-  map.fitBounds(views[v]); update(true);
+  map.fitBounds(views[v]); kpis(); drawChart();
 }
 $('#fPort').addEventListener('click',e=>{ const b=e.target.closest('button'); if(b) setPort(b.dataset.v); });
 $('#fMeasure').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return;
-  st.measure=b.dataset.v; document.querySelectorAll('#fMeasure button').forEach(x=>x.setAttribute('aria-pressed', x===b)); legend(); update(true); });
-$('#rangeReset').addEventListener('click',()=>{ st.r0=0; st.r1=NM-1; update(true); });
-$('#rangeYear').addEventListener('click',()=>{ st.r0=YEAR[0]; st.r1=YEAR[1]; update(true); });
+  st.measure=b.dataset.v; document.querySelectorAll('#fMeasure button').forEach(x=>x.setAttribute('aria-pressed', x===b)); legend(); buildTL(); update(); });
+
+/* ---------- heat-map timeline: the only date filter on the page ---------- */
+const tl = $('#tlSvg'); let tbars=[], tbrush, thl, thr;
+function tlCounts(){ const c=new Array(NM).fill(0); for(let i=0;i<pts.length;i++) if(pass(pts[i])) c[mIdx[i]]++; return c; }
+function buildTL(){
+  tl.innerHTML=''; const W=tl.clientWidth||600, H=54, c=tlCounts(), mx=Math.max(...c,1), bw=W/NM;
+  tl.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  tbars = c.map((v,i)=>{ const h=Math.max(v?2:0, v/mx*(H-14)); return el('rect',{x:i*bw+0.75,y:H-12-h,width:Math.max(1,bw-1.5),height:h,rx:1,fill:'#e9eef1'},tl); });
+  for (let i=0;i<NM;i++){ const [y,mm]=monthKey(i).split('-'); if(mm==='01') el('text',{x:i*bw+2,y:H-1,fill:'#93a1ab','font-size':10,'font-family':'Libre Franklin, sans-serif'},tl).textContent=y; }
+  tbrush = el('rect',{y:0,height:H-12,fill:'rgba(242,160,124,.12)',stroke:'rgba(242,160,124,.7)','stroke-width':1},tl);
+  thl = el('rect',{y:6,width:6,height:H-24,rx:2,fill:'#f2a07c',style:'cursor:ew-resize'},tl);
+  thr = el('rect',{y:6,width:6,height:H-24,rx:2,fill:'#f2a07c',style:'cursor:ew-resize'},tl);
+  tl._bw=bw; paintTL();
+}
+function paintTL(){
+  if (!tbrush) return; const bw=tl._bw;
+  tbars.forEach((b,i)=>b.setAttribute('fill-opacity', i>=st.r0&&i<=st.r1 ? .95 : .22));
+  tbrush.setAttribute('x', st.r0*bw); tbrush.setAttribute('width', (st.r1-st.r0+1)*bw);
+  thl.setAttribute('x', st.r0*bw-3); thr.setAttribute('x', (st.r1+1)*bw-3);
+  $('#tlFrom').textContent = monthLabel(st.r0); $('#tlTo').textContent = monthLabel(st.r1);
+  $('#tlReset').hidden = st.r0===0 && st.r1===NM-1;
+}
+let tdrag=null;
+const tlAt = e => { const b=tl.getBoundingClientRect(); return Math.max(0, Math.min(NM-1, Math.floor((e.clientX-b.left)/b.width*NM))); };
+tl.addEventListener('pointerdown', e=>{
+  stop(); try { tl.setPointerCapture(e.pointerId); } catch(_) {} const m=tlAt(e);
+  if (e.target===thl) tdrag={t:'l'}; else if (e.target===thr) tdrag={t:'r'};
+  else if (e.target===tbrush && st.r1>st.r0) tdrag={t:'move', a:m, r0:st.r0, r1:st.r1};
+  else { tdrag={t:'new', a:m}; st.r0=st.r1=m; mapRange(); }
+});
+tl.addEventListener('pointermove', e=>{
+  if (!tdrag) return; const m=tlAt(e);
+  if (tdrag.t==='l') st.r0=Math.min(m, st.r1); else if (tdrag.t==='r') st.r1=Math.max(m, st.r0);
+  else if (tdrag.t==='new'){ st.r0=Math.min(tdrag.a,m); st.r1=Math.max(tdrag.a,m); }
+  else { const d=m-tdrag.a, len=tdrag.r1-tdrag.r0; st.r0=Math.max(0,Math.min(NM-1-len, tdrag.r0+d)); st.r1=st.r0+len; }
+  mapRange();
+});
+const tend=()=>{ tdrag=null; }; tl.addEventListener('pointerup',tend); tl.addEventListener('pointercancel',tend);
+tl.addEventListener('dblclick',()=>{ st.r0=0; st.r1=NM-1; mapRange(); });
+$('#tlReset').addEventListener('click',()=>{ stop(); st.r0=0; st.r1=NM-1; mapRange(); });
 
 let timer=null; const icon=$('#playIcon');
 function stop(){ if(timer){ clearInterval(timer); timer=null; icon.innerHTML='<path d="M3 1.5v11l9-5.5z" fill="currentColor"/>'; } }
@@ -1090,8 +1115,8 @@ $('#play').addEventListener('click',()=>{
   if (timer) return stop();
   let len = st.r1-st.r0; if (len>=NM-1) len=5;
   if (st.r1>=NM-1){ st.r0=0; st.r1=len; }
-  update(true); icon.innerHTML='<path d="M3 2h3v10H3zM8 2h3v10H8z" fill="currentColor"/>';
-  timer=setInterval(()=>{ if(st.r1>=NM-1){ stop(); update(true); return; } st.r0++; st.r1++; update(false); }, 520);
+  mapRange(); icon.innerHTML='<path d="M3 2h3v10H3zM8 2h3v10H8z" fill="currentColor"/>';
+  timer=setInterval(()=>{ if(st.r1>=NM-1){ stop(); return; } st.r0++; st.r1++; mapRange(); }, 520);
 });
 
 $('#copyCite').addEventListener('click',e=>{
@@ -1100,8 +1125,8 @@ $('#copyCite').addEventListener('click',e=>{
   const fallback=()=>{ const r=document.createRange(); r.selectNodeContents($('#citeText')); const s=getSelection(); s.removeAllRanges(); s.addRange(r); b.textContent='Selected: press Ctrl+C'; };
   try { navigator.clipboard.writeText(t).then(ok, fallback); } catch(_) { fallback(); }
 });
-let rt=0, lastW=0; new ResizeObserver(()=>{ if (host.clientWidth===lastW) return; lastW=host.clientWidth; clearTimeout(rt); rt=setTimeout(()=>drawChart(),80); }).observe(host);
-legend(); update(true);
+let rt=0, lastW=0; new ResizeObserver(()=>{ if (host.clientWidth===lastW) return; lastW=host.clientWidth; clearTimeout(rt); rt=setTimeout(()=>{ drawChart(); buildTL(); },80); }).observe(host);
+legend(); buildTL(); update();
 })();
 </script>
 </body>
