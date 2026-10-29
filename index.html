@@ -687,7 +687,7 @@ img{max-width:100%}[hidden]{display:none!important}
 /* Layout: a single 640px reading column, figures break out to 1080px, imagery and the map go full-bleed on a night-sea ground. */
 :root{
   --paper:#f7f8f6; --ink:#121619; --ink-2:#4a5257; --muted:#7c858a; --rule:#dde1df; --card:#ffffff;
-  --sea:#2a78d6; --dock:#eb6834; --warn:#c2410c;
+  --sea:#2a78d6; --dock:#1baf7a; --warn:#c2410c;
   --night:#06090d; --night-2:#0d1319; --night-ink:#e9eef1; --night-muted:#93a1ab; --night-rule:#25313b;
   --display:"Newsreader", "Iowan Old Style", Georgia, serif;
   --body:"Source Serif 4", Georgia, "Times New Roman", serif;
@@ -696,10 +696,10 @@ img{max-width:100%}[hidden]{display:none!important}
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --paper:#0f1316; --ink:#e8ecee; --ink-2:#b4bdc2; --muted:#87929a; --rule:#2a3238; --card:#161c20;
-  --sea:#3987e5; --dock:#e2652f; --warn:#f08a5d; color-scheme:dark}}
+  --sea:#3987e5; --dock:#199e70; --warn:#f08a5d; color-scheme:dark}}
 :root[data-theme="dark"]{
   --paper:#0f1316; --ink:#e8ecee; --ink-2:#b4bdc2; --muted:#87929a; --rule:#2a3238; --card:#161c20;
-  --sea:#3987e5; --dock:#e2652f; --warn:#f08a5d; color-scheme:dark}
+  --sea:#3987e5; --dock:#199e70; --warn:#f08a5d; color-scheme:dark}
 
 *{box-sizing:border-box}
 body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:19px;line-height:1.62;margin:0;-webkit-font-smoothing:antialiased}
@@ -1082,7 +1082,7 @@ footer{border-top:1px solid var(--rule);margin-top:64px;padding-block:28px 60px;
   <div class="panels" id="pierPanels">
     <figure class="panel"><div class="im"><img src="img/pier_rgb.png" alt="Cap-Haïtien wharf on 26 February 2026 in true colour, with two ships alongside." loading="lazy"></div><figcaption><b>1 · The wharf today</b>Cap-Haïtien, 26 Feb 2026. Two ships are alongside, merging with the quay.</figcaption></figure>
     <figure class="panel"><div class="im"><img src="img/pier_freq.png" alt="Map of how often each pixel was water across 261 other clear images; the sea is bright blue, land is dark." loading="lazy"></div><figcaption><b>2 · How often each spot is water</b>Across the 261 other clear images of this port.<span class="ramp">never<i></i>always</span></figcaption></figure>
-    <figure class="panel"><div class="im" id="flipIm"><img src="img/pier_flip.png" alt="Pixels near the wharf that are normally water but are not water today, highlighted in orange." loading="lazy"></div><figcaption><b>3 · Usually water, but not today</b>Orange pixels flipped. The filter kept the two ships (solid circles) and rejected a third candidate (dashed).</figcaption></figure>
+    <figure class="panel"><div class="im" id="flipIm"><img src="img/pier_flip.png" alt="Pixels near the wharf that are normally water but are not water today, highlighted in green." loading="lazy"></div><figcaption><b>3 · Usually water, but not today</b>Green pixels flipped. The filter kept the two ships (solid circles) and rejected a third candidate (dashed).</figcaption></figure>
   </div>
 </div>
 
@@ -1303,7 +1303,7 @@ const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).
   $('#cmpShow').addEventListener('change', e=> c.classList.toggle('show', e.target.checked));
   const add = (boxes, side) => boxes.forEach(b=>{
     const d = document.createElement('div'); d.className='bx '+side; d.style.left=(b.x*100)+'%'; d.style.top=(b.y*100)+'%';
-    d.style.borderColor = b.src==='dock' ? '#ff9a6b' : '#ffffff'; host.appendChild(d);
+    d.style.borderColor = b.src==='dock' ? '#5fd3a8' : '#ffffff'; host.appendChild(d);
   });
   add(M.before.boxes,'b'); add(M.after.boxes,'a');
   const wk=document.createElement('div'); wk.className='wk'; wk.style.left=(M.wreck_in_crop.x*100)+'%'; wk.style.top=(M.wreck_in_crop.y*100)+'%'; wk.innerHTML='<span>fixed object, not counted</span>'; c.insertBefore(wk, c.querySelector('.handle'));

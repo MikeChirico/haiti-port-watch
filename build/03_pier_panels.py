@@ -62,7 +62,7 @@ def main():
                      out_shape=freq.shape, transform=T).astype(bool)
     flip = (freq >= 0.6) & ~W[idx] & V[idx] & dock
     ov = rgb * 0.45
-    ov[flip] = np.array([0.92, 0.41, 0.20])
+    ov[flip] = np.array([0.106, 0.686, 0.478])   # #1baf7a, the "at the pier" colour used on both pages
     save(ov, "pier_flip.png")
 
     sc = pd.read_csv(OML / "dock_filter" / "detections_scored.csv")
