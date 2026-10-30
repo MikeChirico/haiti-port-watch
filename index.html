@@ -694,9 +694,10 @@ img{max-width:100%}[hidden]{display:none!important}
   --ui:"Libre Franklin", "Helvetica Neue", Arial, sans-serif;
   --col:640px; --wide:1080px;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+/* dark is the default; light applies only when a viewer explicitly picks it (data-theme="light") */
+:root:not([data-theme="light"]){
   --paper:#0f1316; --ink:#e8ecee; --ink-2:#b4bdc2; --muted:#87929a; --rule:#2a3238; --card:#161c20;
-  --sea:#3987e5; --dock:#199e70; --warn:#f08a5d; color-scheme:dark}}
+  --sea:#3987e5; --dock:#199e70; --warn:#f08a5d; color-scheme:dark}
 :root[data-theme="dark"]{
   --paper:#0f1316; --ink:#e8ecee; --ink-2:#b4bdc2; --muted:#87929a; --rule:#2a3238; --card:#161c20;
   --sea:#3987e5; --dock:#199e70; --warn:#f08a5d; color-scheme:dark}
