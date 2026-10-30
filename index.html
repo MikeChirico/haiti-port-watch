@@ -874,6 +874,8 @@ p{margin:0 0 1.1em}
 .latest .lnote{color:var(--muted)}
 .latest i{font-style:normal;display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--sea);margin-right:7px;vertical-align:1px;box-shadow:0 0 0 3px color-mix(in srgb,var(--sea) 22%,transparent)}
 @media (max-width:760px){.findings{grid-template-columns:1fr}}
+.explore{border-top:1px solid var(--rule);padding-top:40px}
+.explore h2{margin-bottom:12px}
 /* review tool */
 .review{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:36px;align-items:start;margin-top:10px}
 .review figure{margin:0}
@@ -1226,6 +1228,14 @@ footer{border-top:1px solid var(--rule);margin-top:64px;padding-block:28px 60px;
       </ul>
       <p class="caption">Used to review the 60-pass validation sample and to label 188 pier detections for training the filter. It has since grown into a desktop app with projects, guided setup and model-assisted labelling.</p>
     </div>
+  </div>
+</section>
+<section class="section col" id="explore">
+  <div class="explore">
+    <p class="kicker">Your turn</p>
+    <h2>Explore the data yourself</h2>
+    <p>See every port and every month since October 2021, filter the map by date, and download the full daily and monthly data.</p>
+    <div class="cta"><a class="btn solid" href="dashboard.html">Explore the data dashboard<svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7h9M7.5 3.5L11 7l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></a><a class="btn outline" href="dashboard.html#downloads">Download the data (CSV)</a></div>
   </div>
 </section>
 </main>
